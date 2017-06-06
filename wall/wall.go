@@ -51,3 +51,8 @@ func (wall *Wall) Shuffle() {
 func (wall *Wall) Length() int {
 	return len(wall.tiles)
 }
+
+// RemainLength 牌墙剩余张数
+func (wall *Wall) RemainLength() int {
+	return wall.Length() - wall.forward - wall.backward
+}

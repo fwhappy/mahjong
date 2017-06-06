@@ -63,3 +63,13 @@ func (wall *Wall) BackwardDraw() int {
 	return wall.GetTile(index)
 
 }
+
+// IsAllDrawn 是否已经抓完了
+func (wall *Wall) IsAllDrawn() bool {
+	return wall.forward+wall.backward >= wall.Length()
+}
+
+// IsDrawn 某张牌是否被抓过
+// func (wall *Wall) IsDrawn(index int) bool {
+// 	return false
+// }
