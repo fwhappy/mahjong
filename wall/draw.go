@@ -70,6 +70,13 @@ func (wall *Wall) IsAllDrawn() bool {
 }
 
 // IsDrawn 某张牌是否被抓过
-// func (wall *Wall) IsDrawn(index int) bool {
-// 	return false
-// }
+// 需要考虑后面被抓奇数张的情况，如果牌总数是108，后面第一张抓的应该是106，107还在
+func (wall *Wall) IsDrawn(index int) bool {
+	if index < wall.forward {
+		return true
+	}
+	if wall.backward%2 == 0 {
+		return index >= wall.Length()-wall.backward
+	}
+	return index >= wall.Length()-wall.backward-1 && index != wall.Length()-wall.backward
+}
