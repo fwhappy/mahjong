@@ -1,8 +1,6 @@
 package suggest
 
 import (
-	"fmt"
-
 	"github.com/fwhappy/mahjong/card"
 	"github.com/fwhappy/mahjong/ting"
 	"github.com/fwhappy/mahjong/weight"
@@ -71,8 +69,6 @@ func (ms *MSelector) GetSuggest() int {
 func (ms *MSelector) suggestByAIPlatinum(s []int) int {
 	// fixme 暂时没空实现，还是根据权重选择
 	tilesWeight := weight.GetCardsWeight(s, nil)
-	fmt.Println(s)
-	fmt.Println(tilesWeight)
 	return ms.suggestByWeightAndRemain(tilesWeight)
 
 	/*
