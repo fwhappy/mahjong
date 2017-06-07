@@ -53,3 +53,21 @@ const (
 	MAHJONG_FLOWER3 = 63
 	MAHJONG_FLOWER4 = 64
 )
+
+// SideCards 边张
+var SideCards = []int{MAHJONG_CRAK1, MAHJONG_CRAK9, MAHJONG_BAM1, MAHJONG_BAM9, MAHJONG_DOT1, MAHJONG_DOT9}
+
+// LeftSideCards 左边张
+var LeftSideCards = []int{MAHJONG_CRAK1, MAHJONG_BAM1, MAHJONG_DOT1}
+
+// RightSideCards 右边张
+var RightSideCards = []int{MAHJONG_CRAK9, MAHJONG_BAM9, MAHJONG_DOT9}
+
+// SideNeighborCards 邻边张
+var SideNeighborCards = []int{MAHJONG_CRAK2, MAHJONG_CRAK8, MAHJONG_BAM2, MAHJONG_BAM8, MAHJONG_DOT2, MAHJONG_DOT8}
+
+// LeftSideNeighborCards 左邻边张
+var LeftSideNeighborCards = []int{MAHJONG_CRAK2, MAHJONG_BAM2, MAHJONG_DOT2}
+
+// RightSideNeighborCards 右邻边张
+var RightSideNeighborCards = []int{MAHJONG_CRAK8, MAHJONG_BAM8, MAHJONG_DOT8}

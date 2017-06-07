@@ -43,8 +43,8 @@ func CanWin(handCards, showCards []int) bool {
 		} else {
 			lastPairTile = sortedCards[v]
 		}
-		cards := removePair(sortedCards, v)
-		if isAllSequenceOrTriplet(cards) {
+		cards := RemovePair(sortedCards, v)
+		if IsAllSequenceOrTriplet(cards) {
 			return true
 		}
 	}
@@ -65,22 +65,22 @@ func FindPairPos(sortedCards []int) []int {
 	return pos
 }
 
-// removePair 从已排序的牌中，移除一对
-func removePair(sortedCards []int, pos int) []int {
+// RemovePair 从已排序的牌中，移除一对
+func RemovePair(sortedCards []int, pos int) []int {
 	remainCards := make([]int, 0, len(sortedCards)-2)
 	remainCards = append(remainCards, sortedCards[:pos]...)
 	remainCards = append(remainCards, sortedCards[pos+2:]...)
 	return remainCards
 }
 
-// isAllSequenceOrTriplet 是否全部顺或者刻
+// IsAllSequenceOrTriplet 是否全部顺或者刻
 // 传入的牌需要是已排序的
-func isAllSequenceOrTriplet(sortedCards []int) bool {
+func IsAllSequenceOrTriplet(sortedCards []int) bool {
 	cardsLen := len(sortedCards)
 	for i := 0; i < cardsLen/3; i++ {
-		find := findAndRemoveTriplet(&sortedCards)
+		find := FindAndRemoveTriplet(&sortedCards)
 		if !find {
-			find = findAndRemoveSequence(&sortedCards)
+			find = FindAndRemoveSequence(&sortedCards)
 		}
 		if !find {
 			return false
@@ -89,18 +89,18 @@ func isAllSequenceOrTriplet(sortedCards []int) bool {
 	return len(sortedCards) == 0
 }
 
-// findAndRemoveTriplet 从已排序的[]int中移除排头的刻子
-func findAndRemoveTriplet(sortedCards *[]int) bool {
+// FindAndRemoveTriplet 从已排序的[]int中移除排头的刻子
+func FindAndRemoveTriplet(sortedCards *[]int) bool {
 	var v = *sortedCards
-	if isTriplet(v[0], v[1], v[2]) {
+	if IsTriplet(v[0], v[1], v[2]) {
 		*sortedCards = append([]int{}, v[3:]...)
 		return true
 	}
 	return false
 }
 
-// findAndRemoveSequence 从已排序的[]int中移除排头的顺子
-func findAndRemoveSequence(sortedCards *[]int) bool {
+// FindAndRemoveSequence 从已排序的[]int中移除排头的顺子
+func FindAndRemoveSequence(sortedCards *[]int) bool {
 	var v = *sortedCards
 	var tmp = make([]int, 0)
 	for i := 1; i < len(v); i++ {
@@ -120,10 +120,10 @@ func findAndRemoveSequence(sortedCards *[]int) bool {
 	return false
 }
 
-// isSequence 是否顺子
+// IsSequence 是否顺子
 // 传入的牌必须是已排序的
 // 非万、筒、条肯定不是顺
-func isSequence(tileA, tileB, tileC int) bool {
+func IsSequence(tileA, tileB, tileC int) bool {
 	if !card.IsSuit(tileA) || !card.IsSuit(tileB) || !card.IsSuit(tileC) {
 		return false
 	}
@@ -133,10 +133,34 @@ func isSequence(tileA, tileB, tileC int) bool {
 	return false
 }
 
-// isTriplet 是否刻子
-func isTriplet(tileA, tileB, tileC int) bool {
+// IsTriplet 是否刻子
+func IsTriplet(tileA, tileB, tileC int) bool {
 	if tileB == tileA && tileC == tileB {
 		return true
 	}
 	return false
+}
+
+// FindSequenceOrTripletCnt 找出当前牌中所有刻和顺的数量
+// 返回数量和抽完剩余的牌
+func FindSequenceOrTripletCnt(sortedCards []int) (int, []int) {
+	var cnt = 0
+	var remain = []int{}
+	for {
+		if len(sortedCards) <= 2 {
+			remain = append(remain, sortedCards...)
+			break
+		}
+		find := FindAndRemoveTriplet(&sortedCards)
+		if !find {
+			find = FindAndRemoveSequence(&sortedCards)
+		}
+		if find {
+			cnt++
+		} else {
+			remain = append(remain, sortedCards[0])
+			sortedCards = sortedCards[1:]
+		}
+	}
+	return cnt, remain
 }

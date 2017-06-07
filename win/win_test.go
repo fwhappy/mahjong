@@ -1,6 +1,7 @@
 package win
 
 import (
+	"fmt"
 	"reflect"
 	"testing"
 )
@@ -18,13 +19,13 @@ func TestFindPairPos(t *testing.T) {
 func TestRemovePair(t *testing.T) {
 	cards := []int{1, 1, 1, 1, 5, 6, 7, 8, 8, 11, 11}
 	// findPos := FindPairPos(cards)
-	if !reflect.DeepEqual(removePair(cards, 9), []int{1, 1, 1, 1, 5, 6, 7, 8, 8}) {
+	if !reflect.DeepEqual(RemovePair(cards, 9), []int{1, 1, 1, 1, 5, 6, 7, 8, 8}) {
 		t.Error("removePair 验证失败")
 	}
-	if !reflect.DeepEqual(removePair(cards, 7), []int{1, 1, 1, 1, 5, 6, 7, 11, 11}) {
+	if !reflect.DeepEqual(RemovePair(cards, 7), []int{1, 1, 1, 1, 5, 6, 7, 11, 11}) {
 		t.Error("removePair 验证失败")
 	}
-	if !reflect.DeepEqual(removePair(cards, 2), []int{1, 1, 5, 6, 7, 8, 8, 11, 11}) {
+	if !reflect.DeepEqual(RemovePair(cards, 2), []int{1, 1, 5, 6, 7, 8, 8, 11, 11}) {
 		t.Error("removePair 验证失败")
 	}
 }
@@ -34,15 +35,15 @@ func TestIsAllShunOrKe(t *testing.T) {
 	cards := make([]int, 0)
 
 	cards = []int{1, 1, 1, 2, 3, 3, 4, 4, 5}
-	if !isAllSequenceOrTriplet(cards) {
+	if !IsAllSequenceOrTriplet(cards) {
 		t.Errorf("TestIsAllShunOrKe failed1:%v", cards)
 	}
 	cards = []int{1, 1, 2, 2, 3, 3}
-	if !isAllSequenceOrTriplet(cards) {
+	if !IsAllSequenceOrTriplet(cards) {
 		t.Errorf("TestIsAllShunOrKe failed2:%v", cards)
 	}
 	cards = []int{1, 1, 1, 2, 2, 3, 3, 4, 4}
-	if !isAllSequenceOrTriplet(cards) {
+	if !IsAllSequenceOrTriplet(cards) {
 		t.Errorf("TestIsAllShunOrKe failed3:%v", cards)
 	}
 }
@@ -111,5 +112,45 @@ func TestCanWin(t *testing.T) {
 	handCards = []int{1, 1, 1, 2, 2, 3, 3, 4, 4, 5, 5}
 	if !CanWin(handCards, nil) {
 		t.Error("11张牌型验证失败1")
+	}
+}
+
+func TestFindFindSequenceOrTripletCnt(t *testing.T) {
+	var showTiles = []int{}
+	var remainTiles = []int{}
+	var step int
+
+	showTiles = []int{1, 2, 3, 4}
+	step, remainTiles = FindSequenceOrTripletCnt(showTiles)
+	fmt.Println(step, ",", remainTiles)
+	if step != 1 {
+		t.Error("验证牌阶错误1")
+	}
+
+	showTiles = []int{1, 2, 3, 4, 3}
+	step, remainTiles = FindSequenceOrTripletCnt(showTiles)
+	fmt.Println(step, ",", remainTiles)
+	if step != 1 {
+		t.Error("验证牌阶错误1")
+	}
+
+	showTiles = []int{1, 2, 3, 4, 4}
+	step, remainTiles = FindSequenceOrTripletCnt(showTiles)
+	fmt.Println(step, ",", remainTiles)
+	if step != 1 {
+		t.Error("验证牌阶错误1")
+	}
+
+	showTiles = []int{1, 2, 3, 4, 4, 4}
+	step, remainTiles = FindSequenceOrTripletCnt(showTiles)
+	fmt.Println(step, ",", remainTiles)
+	if step != 1 {
+		t.Error("验证牌阶错误1")
+	}
+	showTiles = []int{1, 2, 3, 4, 4, 5, 5, 6, 7}
+	step, remainTiles = FindSequenceOrTripletCnt(showTiles)
+	fmt.Println(step, ",", remainTiles)
+	if step != 1 {
+		t.Error("验证牌阶错误1")
 	}
 }
