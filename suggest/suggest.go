@@ -1,13 +1,12 @@
 package suggest
 
 import (
-	"util"
-
 	"fmt"
 
 	"github.com/fwhappy/mahjong/card"
 	"github.com/fwhappy/mahjong/ting"
 	"github.com/fwhappy/mahjong/weight"
+	"github.com/fwhappy/util"
 )
 
 // GetSuggest 根据当前牌型，推荐一张牌
