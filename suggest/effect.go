@@ -8,6 +8,13 @@ import (
 	"github.com/fwhappy/util"
 )
 
+// GetEffects 计算牌型所在的牌阶以及一类有效牌数量
+func (ms *MSelector) GetEffects(s []int) (int, int) {
+	currentStep := step.GetCardsStep(s)
+	effects := calcEffects(s, currentStep)
+	return currentStep, len(effects)
+}
+
 // 有效牌算法
 // 返回所有一类有效牌
 func calcEffects(tiles []int, currentStep int) []int {
