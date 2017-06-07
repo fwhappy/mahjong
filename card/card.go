@@ -1,8 +1,6 @@
 package card
 
-import (
-	"github.com/fwhappy/util"
-)
+import "github.com/fwhappy/util"
 
 // IsSuit 是否普通牌
 // 普通牌是指万、筒、条
@@ -64,4 +62,45 @@ func GetRelationTiles(cards ...int) []int {
 // IsSameType 检查两张牌是否同类
 func IsSameType(checkCard, lackCard int) bool {
 	return checkCard/10 == lackCard/10
+}
+
+// IsCrak 是否万
+func IsCrak(card int) bool {
+	return card >= MAHJONG_CRAK1 && card <= MAHJONG_CRAK9
+}
+
+// IsBAM 是否条
+func IsBAM(card int) bool {
+	return card >= MAHJONG_BAM1 && card <= MAHJONG_BAM9
+}
+
+// IsDot 是否筒
+func IsDot(card int) bool {
+	return card >= MAHJONG_DOT1 && card <= MAHJONG_DOT9
+}
+
+// GetBehindCardCycle 获取某张牌的下一张牌（循环获取）
+func GetBehindCardCycle(card int) int {
+	var behind int
+	if IsSuit(card) {
+		if card == MAHJONG_CRAK9 || card == MAHJONG_BAM9 || card == MAHJONG_DOT9 {
+			behind = card - 8
+		} else {
+			behind = card + 1
+		}
+	}
+	return behind
+}
+
+// GetFrontCardCycle 获取某张牌的前一张牌（循环获取）
+func GetFrontCardCycle(card int) int {
+	var front int
+	if IsSuit(card) {
+		if card == MAHJONG_CRAK1 || card == MAHJONG_BAM1 || card == MAHJONG_DOT1 {
+			front = card + 8
+		} else {
+			front = card - 1
+		}
+	}
+	return front
 }
