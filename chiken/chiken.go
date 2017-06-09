@@ -14,11 +14,12 @@ type MChiken struct {
 	chargeBam1      int   // 冲锋幺鸡
 	chargeDot8      int   // 冲锋乌骨
 	responsibility  int   // 责任鸡
+	weekDay         int   // 周几
 }
 
 // NewMChiken 生成一个新的鸡的容器
 func NewMChiken() *MChiken {
-	mc := &MChiken{tumblingIndexes: make([]int, 0)}
+	mc := &MChiken{tumblingIndexes: make([]int, 0), weekDay: util.GetChinaWeekDay()}
 	return mc
 }
 
