@@ -2,6 +2,8 @@ package card
 
 import (
 	"fmt"
+
+	"github.com/fwhappy/mahjong/fbs/Common"
 )
 
 // ShowCard 明牌
@@ -63,4 +65,14 @@ func (s *ShowCard) ModifyPongToKong(kongCode int, free bool) {
 // ModifyQiangKong 将kong设置为被抢的状态
 func (s *ShowCard) ModifyQiangKong() {
 	s.tiles = append([]int{}, s.tiles[0:s.GetTilesLen()-1]...)
+}
+
+// IsPong 明牌是否是pong
+func (s *ShowCard) IsPong() bool {
+	return s.opCode == Common.OperationCodePONG
+}
+
+// IsPongTile 明牌是否是pong了这个牌
+func (s *ShowCard) IsPongTile(tile int) bool {
+	return s.opCode == Common.OperationCodePONG && s.tiles[0] == tile
 }
