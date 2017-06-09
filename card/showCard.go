@@ -1,5 +1,9 @@
 package card
 
+import (
+	"fmt"
+)
+
 // ShowCard 明牌
 type ShowCard struct {
 	opCode int   // 操作类型，对应吃、碰、杠对应的操作类型id
@@ -14,6 +18,10 @@ func NewShowCard(opCode, target int, tiles []int, free bool) *ShowCard {
 	return showCard
 }
 
+func (s *ShowCard) string() string {
+	return fmt.Sprintf("[明牌]code:%v,target:%v,tiles:%v,free:%v", s.opCode, s.target, s.tiles, s.free)
+}
+
 // GetOpCode 获取明牌类型
 func (s *ShowCard) GetOpCode() int {
 	return s.opCode
@@ -22,6 +30,12 @@ func (s *ShowCard) GetOpCode() int {
 // GetTiles 获取明牌类型
 func (s *ShowCard) GetTiles() []int {
 	return s.tiles
+}
+
+// GetTile 返回明牌中的牌是什么
+// 至于这个showCard是不是吃，需要外面的逻辑判断
+func (s *ShowCard) GetTile() int {
+	return s.tiles[0]
 }
 
 // GetTarget 获取明牌对象
