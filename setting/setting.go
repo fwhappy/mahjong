@@ -120,7 +120,7 @@ func (ms *MSetting) IsSettingChikenTumbling() bool {
 
 // IsSettingChikenSelf 是否支持本鸡
 func (ms *MSetting) IsSettingChikenSelf() bool {
-	return ms.setting[11] == 1
+	return len(ms.setting) >= 12 && ms.setting[11] == 1
 }
 
 // IsSettingChikenRock 是否设置了滚鸡
