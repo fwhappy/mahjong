@@ -13,6 +13,14 @@ import (
 	"net"
 )
 
+// 消息类型
+const (
+	MSG_TYPE_REQUEST  = 0
+	MSG_TYPE_NOTIFY   = 1
+	MSG_TYPE_RESPONSE = 2
+	MSG_TYPE_PUSH     = 3
+)
+
 // 消息类型，消息分成两种，一种是有messageId的，一种是没有messageId的
 const (
 	PACKAGE_TYPE_NONE_MESSAGE_ID = 0 // 无消息id类型的消息
