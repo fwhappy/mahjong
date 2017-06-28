@@ -89,5 +89,7 @@ func (cm *CMap) GetUnique() []int {
 
 // GetTileCnt 获取某张牌的数量
 func (cm *CMap) GetTileCnt(tile int) int {
+	cm.Mux.RLock()
+	defer cm.Mux.RUnlock()
 	return cm.tiles[tile]
 }
