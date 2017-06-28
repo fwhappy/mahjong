@@ -27,4 +27,6 @@ func TestCardMap(t *testing.T) {
 	t.Logf("cm.ToSortedSlice:%v", cm.ToSortedSlice())
 	cm.AddTile(1, 2)
 	t.Logf("cm.ToSortedSlice:%v", cm.ToSortedSlice())
+	t.Logf("cm.GetTileCnt:%v", cm.GetTileCnt(1))
+	t.Logf("cm.GetTileCnt:%v", cm.GetTileCnt(11))
 }

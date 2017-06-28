@@ -86,3 +86,8 @@ func (cm *CMap) GetUnique() []int {
 	}
 	return tiles
 }
+
+// GetTileCnt 获取某张牌的数量
+func (cm *CMap) GetTileCnt(tile int) int {
+	return cm.tiles[tile]
+}
