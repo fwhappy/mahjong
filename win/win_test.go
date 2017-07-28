@@ -144,13 +144,13 @@ func TestFindFindSequenceOrTripletCnt(t *testing.T) {
 	showTiles = []int{1, 2, 3, 4, 4, 4}
 	step, remainTiles = FindSequenceOrTripletCnt(showTiles)
 	fmt.Println(step, ",", remainTiles)
-	if step != 1 {
+	if step != 2 {
 		t.Error("验证牌阶错误1")
 	}
 	showTiles = []int{1, 2, 3, 4, 4, 5, 5, 6, 7}
 	step, remainTiles = FindSequenceOrTripletCnt(showTiles)
 	fmt.Println(step, ",", remainTiles)
-	if step != 1 {
+	if step != 2 {
 		t.Error("验证牌阶错误1")
 	}
 }

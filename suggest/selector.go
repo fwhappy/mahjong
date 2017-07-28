@@ -3,6 +3,7 @@ package suggest
 import (
 	"sort"
 
+	"github.com/fwhappy/mahjong/card"
 	"github.com/fwhappy/util"
 )
 
@@ -206,24 +207,50 @@ func (ms *MSelector) hasTile(t int) bool {
 	return exists
 }
 
-// 获取跟某张牌有关系的牌
-func (ms *MSelector) getRelationTiles(tiles ...int) []int {
-	relationTiles := []int{}
-
-	for _, t := range tiles {
-		relationTiles = append(relationTiles, t)
-		if ms.hasTile(t - 1) {
-			relationTiles = append(relationTiles, t-1)
-		}
-		if ms.hasTile(t + 1) {
-			relationTiles = append(relationTiles, t+1)
-		}
-		if ms.hasTile(t - 2) {
-			relationTiles = append(relationTiles, t-2)
-		}
-		if ms.hasTile(t + 2) {
-			relationTiles = append(relationTiles, t+2)
+// 判断是否有缺
+func (ms *MSelector) hasLack() bool {
+	if ms.lack > 0 {
+		for tile := range ms.handTiles {
+			if card.IsSameType(tile, ms.lack) {
+				return true
+			}
 		}
 	}
-	return util.SliceUniqueInt(relationTiles)
+	return false
+}
+
+// 获取手牌中与某张牌有关联的牌
+func (ms *MSelector) isGuTile(tile int) bool {
+	// 单张超过1张，不算故障
+	cnt, _ := ms.handTiles[tile]
+	if cnt > 1 {
+		return false
+	}
+	// 拥有有关联的牌，则不算孤张
+	for _, rTile := range card.GetRelationTiles(tile) {
+		if rTile == tile {
+			continue
+		}
+		if _, exists := ms.handTiles[rTile]; exists {
+			return false
+		}
+	}
+	return true
+}
+
+// 获取所有的孤张
+func (ms *MSelector) getGuTiles() []int {
+	gTiles := make([]int, 0)
+	for tile := range ms.handTiles {
+		if ms.isGuTile(tile) {
+			gTiles = append(gTiles, tile)
+		}
+	}
+	return gTiles
+}
+
+// 获取所有的孤一对
+func (ms *MSelector) getGuPairTiles() []int {
+	gpTiles := []int{}
+	return gpTiles
 }

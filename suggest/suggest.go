@@ -1,7 +1,10 @@
 package suggest
 
 import (
+	"sort"
+
 	"github.com/fwhappy/mahjong/card"
+	"github.com/fwhappy/mahjong/step"
 	"github.com/fwhappy/mahjong/ting"
 	"github.com/fwhappy/mahjong/weight"
 	"github.com/fwhappy/util"
@@ -163,11 +166,129 @@ func (ms *MSelector) suggestByWeightAndRemain(tilesWeight map[int]int) int {
 	minRelationCnt := 1000000
 	minRelationTile := 0
 	for _, tile := range minWeightTiles {
-		relationCnt := ms.getRemainTilesCnt(ms.getRelationTiles(tile))
+		relationCnt := ms.getRemainTilesCnt(card.GetRelationTiles(tile))
 		if relationCnt < minRelationCnt {
 			minRelationCnt = relationCnt
 			minRelationTile = tile
 		}
 	}
 	return minRelationTile
+}
+
+// GetSuggestMap 获取推荐的列表
+// 这里默认外面已经考虑过叫牌了，不再考虑叫牌的情况
+// 有缺的时候，不给任何推荐，用户必须先打缺
+// 如果有孤张，优先返回孤张
+// 孤一对，不拆做提示
+// 最多返回maxLength个结果，如果maxLength=0，表示返回所有
+func (ms *MSelector) GetSuggestMap(maxLength int) map[int][]int {
+	suggestMap := make(map[int][]int)
+	// 用户当前手牌
+	// handTiles := ms.ShowHandTiles()
+
+	// 优先判断是否有缺
+	if ms.hasLack() {
+		return suggestMap
+	}
+
+	// 如果有孤张，则优先提示孤张
+	if gTiles := ms.getGuTiles(); len(gTiles) > 0 {
+		for _, v := range weight.GetMinWeigthTiles(util.MapToSlice(ms.handTiles), gTiles, maxLength) {
+			suggestMap[v] = []int{}
+		}
+		return suggestMap
+	}
+
+	// 手牌
+	s := util.MapToSlice(ms.handTiles)
+	// 获取所有的孤一对
+	gpTiles := ms.getGuPairTiles()
+
+	// 计算当前牌阶
+	currentStep := step.GetCardsStep(s)
+
+	// 循环删除一张手牌后，计算一类有效牌的数量
+	for playTile := range ms.handTiles {
+		// 孤对不推荐
+		if util.IntInSlice(playTile, gpTiles) {
+			continue
+		}
+		tiles := util.SliceDel(s, playTile)
+		// 如果打出后，牌阶比之前的还要低，肯定不能这么打
+		playedStep := step.GetCardsStep(tiles)
+		if playedStep < currentStep {
+			continue
+		}
+		// 计算一类有效牌数量
+		effects := calcEffects(tiles, currentStep)
+		if len(effects) > 0 {
+			suggestMap[playTile] = effects
+		}
+	}
+
+	// 如果未找到一类有效牌，则继续查找二类有效牌
+	if len(suggestMap) == 0 {
+		// 循环删除一张手牌后，计算一类有效牌的数量
+		for playTile := range ms.handTiles {
+			sEffects := []int{}
+			// 孤对不推荐
+			if util.IntInSlice(playTile, gpTiles) {
+				continue
+			}
+			tiles := util.SliceDel(s, playTile)
+			// 如果打出后，牌阶比之前的还要低，肯定不能这么打
+			playedStep := step.GetCardsStep(tiles)
+			if playedStep < currentStep {
+				continue
+			}
+
+			// 获取跟playTile有关系的牌
+			for _, rTile := range card.GetRelationTiles(playTile) {
+				effects := calcEffects(append([]int{rTile}, tiles...), currentStep)
+				if len(effects) > 0 {
+					sEffects = append(sEffects, rTile)
+				}
+			}
+			if len(sEffects) > 0 {
+				suggestMap[playTile] = sEffects
+			}
+		}
+	}
+
+	// 如果找到了推荐的牌，则需要根据可进张数，保留maxLength个推荐的牌
+	if len(suggestMap) > maxLength {
+		remainTiles := []int{}
+		remainMap := make(map[int][]int)
+		cnts := []int{}
+		for tile, effects := range suggestMap {
+			remainCnt := ms.getRemainTilesCnt(effects)
+			v, ok := remainMap[remainCnt]
+			if ok {
+				remainMap[remainCnt] = append(v, tile)
+			} else {
+				remainMap[remainCnt] = []int{tile}
+				cnts = append(cnts, remainCnt)
+			}
+		}
+		sort.Ints(cnts)
+		for i := len(cnts) - 1; i >= 0; i-- {
+			for _, tile := range remainMap[cnts[i]] {
+				remainTiles = append(remainTiles, tile)
+				if len(remainTiles) >= maxLength {
+					break
+				}
+			}
+			if len(remainTiles) >= maxLength {
+				break
+			}
+		}
+
+		for k := range suggestMap {
+			if !util.IntInSlice(k, remainTiles) {
+				delete(suggestMap, k)
+			}
+		}
+	}
+
+	return suggestMap
 }

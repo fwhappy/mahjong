@@ -15,7 +15,7 @@ func (ms *MSelector) GetEffects(s []int) (int, int) {
 	return currentStep, len(effects)
 }
 
-// 有效牌算法
+// 一类有效牌算法
 // 返回所有一类有效牌
 func calcEffects(tiles []int, currentStep int) []int {
 	var effects = []int{}
