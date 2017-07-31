@@ -7,6 +7,7 @@ type MSetting struct {
 	exchange bool // 是否支持换牌
 
 	// 按顺序，0：满堂鸡；1：连庄；2：上下鸡；3：乌骨鸡；4：前后鸡；5：星期鸡；6：意外鸡；7：吹风鸡；8：滚筒鸡；9：麻将人数；10：麻将张数；11：本鸡
+	// 12：站鸡；13：翻倍鸡；14：首圈鸡；15：清一色奖励三分；16：自摸翻倍；17：一扣二；18：通三；19：大牌翻倍
 	// 满堂鸡: 打出去的牌也算鸡
 	// 上下鸡: 翻出来的牌，上一张也算鸡，eg: 翻出来5条，如果开启了上下鸡，则4条也算鸡
 	// 乌骨鸡: 8筒
@@ -126,4 +127,44 @@ func (ms *MSetting) IsSettingChikenSelf() bool {
 // IsSettingChikenRock 是否设置了滚鸡
 func (ms *MSetting) IsSettingChikenRock() bool {
 	return ms.IsSettingChikenFB() || ms.IsSettingChikenTumbling()
+}
+
+// IsEnableStandChiken 是否支持站鸡
+func (ms *MSetting) IsEnableStandChiken() bool {
+	return len(ms.setting) >= 13 && ms.setting[12] == 1
+}
+
+// IsEnableDoubleChiken 是否支持翻倍鸡
+func (ms *MSetting) IsEnableDoubleChiken() bool {
+	return len(ms.setting) >= 14 && ms.setting[13] == 1
+}
+
+// IsEnableFirstCycleChiken 是否支持首圈鸡
+func (ms *MSetting) IsEnableFirstCycleChiken() bool {
+	return len(ms.setting) >= 15 && ms.setting[14] == 1
+}
+
+// IsEnableQE 是否支持清一色加3分
+func (ms *MSetting) IsEnableQE() bool {
+	return len(ms.setting) >= 16 && ms.setting[15] == 1
+}
+
+// IsEnableDoubleZM 是否支持自摸翻倍
+func (ms *MSetting) IsEnableDoubleZM() bool {
+	return len(ms.setting) >= 17 && ms.setting[16] == 1
+}
+
+// IsEnableYKE 是否支持一扣二
+func (ms *MSetting) IsEnableYKE() bool {
+	return len(ms.setting) >= 18 && ms.setting[17] == 1
+}
+
+// IsEnableTS 是否支持通三
+func (ms *MSetting) IsEnableTS() bool {
+	return len(ms.setting) >= 19 && ms.setting[18] == 1
+}
+
+// IsEnableDoubleDP 是否支持大牌翻倍
+func (ms *MSetting) IsEnableDoubleDP() bool {
+	return len(ms.setting) >= 20 && ms.setting[19] == 1
 }
