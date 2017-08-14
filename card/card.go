@@ -1,6 +1,8 @@
 package card
 
-import "github.com/fwhappy/util"
+import (
+	"github.com/fwhappy/util"
+)
 
 // IsSuit 是否普通牌
 // 普通牌是指万、筒、条
@@ -21,12 +23,11 @@ func GetSelfAndNeighborCards(cards ...int) []int {
 		if !IsSuit(card) {
 			continue
 		}
-		switch card {
-		case MAHJONG_CRAK1, MAHJONG_BAM1, MAHJONG_DOT1:
+		if util.IntInSlice(card, LeftSideCards) {
 			result = append(result, card+1)
-		case MAHJONG_CRAK9, MAHJONG_BAM9, MAHJONG_DOT9:
+		} else if util.IntInSlice(card, RightSideCards) {
 			result = append(result, card-1)
-		default:
+		} else {
 			result = append(result, card-1, card+1)
 		}
 	}
@@ -43,16 +44,16 @@ func GetRelationTiles(cards ...int) []int {
 		if !IsSuit(card) {
 			continue
 		}
-		switch card {
-		case MAHJONG_CRAK1, MAHJONG_BAM1, MAHJONG_DOT1:
+
+		if util.IntInSlice(card, LeftSideCards) {
 			result = append(result, card+1, card+2)
-		case MAHJONG_CRAK2, MAHJONG_BAM2, MAHJONG_DOT2:
+		} else if util.IntInSlice(card, LeftSideNeighborCards) {
 			result = append(result, card+1, card+2, card-1)
-		case MAHJONG_CRAK8, MAHJONG_BAM8, MAHJONG_DOT8:
+		} else if util.IntInSlice(card, RightSideNeighborCards) {
 			result = append(result, card-1, card-2, card+1)
-		case MAHJONG_CRAK9, MAHJONG_BAM9, MAHJONG_DOT9:
+		} else if util.IntInSlice(card, RightSideCards) {
 			result = append(result, card-1, card-2)
-		default:
+		} else {
 			result = append(result, card-1, card-2, card+1, card+2)
 		}
 	}
@@ -83,7 +84,7 @@ func IsDot(card int) bool {
 func GetBehindCardCycle(card int) int {
 	var behind int
 	if IsSuit(card) {
-		if card == MAHJONG_CRAK9 || card == MAHJONG_BAM9 || card == MAHJONG_DOT9 {
+		if util.IntInSlice(card, RightSideCards) {
 			behind = card - 8
 		} else {
 			behind = card + 1
@@ -96,7 +97,7 @@ func GetBehindCardCycle(card int) int {
 func GetFrontCardCycle(card int) int {
 	var front int
 	if IsSuit(card) {
-		if card == MAHJONG_CRAK1 || card == MAHJONG_BAM1 || card == MAHJONG_DOT1 {
+		if util.IntInSlice(card, LeftSideCards) {
 			front = card + 8
 		} else {
 			front = card - 1

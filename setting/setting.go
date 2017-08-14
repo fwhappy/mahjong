@@ -2,9 +2,23 @@ package setting
 
 // MSetting 游戏设置
 type MSetting struct {
-	lack     bool // 是否支持定缺
-	pinghu   bool // 是否支持平胡
-	exchange bool // 是否支持换牌
+	lack          bool // 是否支持定缺
+	pinghu        bool // 是否支持平胡
+	exchange      bool // 是否支持换牌
+	EnableKongTXZ bool // 明杠是否算通行证
+
+	// 积分倍数
+	Multiple int // 积分倍数
+
+	// 牌型支持
+	EnableShuangLongQiDui bool // 是否支持双龙七对
+	EnableBianKaDiao      bool // 是否支持边卡吊
+	EnableDaKuanZhang     bool // 是否支持大宽张
+	EnableDi7Dui          bool // 是否支持地七对
+	EnablePinghuZimo      bool // 是否支持平胡自摸
+	EnableDanDiao         bool // 是否支持平胡自摸
+	EnableDoubleDealer    bool // 是否支持庄家胡牌翻倍
+	EnableKongAfterDraw   bool // 是否支持杠上开花，这里是指把杠上开花独立作为一个牌型，杠上开花时，不计其他牌型
 
 	// 按顺序，0：满堂鸡；1：连庄；2：上下鸡；3：乌骨鸡；4：前后鸡；5：星期鸡；6：意外鸡；7：吹风鸡；8：滚筒鸡；9：麻将人数；10：麻将张数；11：本鸡
 	// 12：站鸡；13：翻倍鸡；14：首圈鸡；15：清一色奖励三分；16：自摸翻倍；17：一扣二；18：通三；19：大牌翻倍
@@ -20,7 +34,22 @@ type MSetting struct {
 
 // NewMSetting 新建一个MSetting的引用
 func NewMSetting() *MSetting {
-	mSetting := &MSetting{lack: false, pinghu: false, exchange: false, setting: []int{}}
+	mSetting := &MSetting{
+		lack:                  false,
+		pinghu:                false,
+		exchange:              false,
+		EnableKongTXZ:         true,
+		Multiple:              1,
+		setting:               []int{},
+		EnableShuangLongQiDui: true,
+		EnableBianKaDiao:      false,
+		EnableDaKuanZhang:     false,
+		EnableDi7Dui:          false,
+		EnablePinghuZimo:      false,
+		EnableDanDiao:         true,
+		EnableDoubleDealer:    false,
+		EnableKongAfterDraw:   false,
+	}
 	return mSetting
 }
 
@@ -129,42 +158,42 @@ func (ms *MSetting) IsSettingChikenRock() bool {
 	return ms.IsSettingChikenFB() || ms.IsSettingChikenTumbling()
 }
 
-// IsEnableStandChiken 是否支持站鸡
-func (ms *MSetting) IsEnableStandChiken() bool {
+// IsSettingStandChiken 是否支持站鸡
+func (ms *MSetting) IsSettingStandChiken() bool {
 	return len(ms.setting) >= 13 && ms.setting[12] == 1
 }
 
-// IsEnableDoubleChiken 是否支持翻倍鸡
-func (ms *MSetting) IsEnableDoubleChiken() bool {
+// IsSettingDoubleChiken 是否支持翻倍鸡
+func (ms *MSetting) IsSettingDoubleChiken() bool {
 	return len(ms.setting) >= 14 && ms.setting[13] == 1
 }
 
-// IsEnableFirstCycleChiken 是否支持首圈鸡
-func (ms *MSetting) IsEnableFirstCycleChiken() bool {
+// IsSettingFirstCycleChiken 是否支持首圈鸡
+func (ms *MSetting) IsSettingFirstCycleChiken() bool {
 	return len(ms.setting) >= 15 && ms.setting[14] == 1
 }
 
-// IsEnableQE 是否支持清一色加3分
-func (ms *MSetting) IsEnableQE() bool {
+// IsSettingQE 是否支持清一色加3分
+func (ms *MSetting) IsSettingQE() bool {
 	return len(ms.setting) >= 16 && ms.setting[15] == 1
 }
 
-// IsEnableDoubleZM 是否支持自摸翻倍
-func (ms *MSetting) IsEnableDoubleZM() bool {
+// IsSettingDoubleZM 是否支持自摸翻倍
+func (ms *MSetting) IsSettingDoubleZM() bool {
 	return len(ms.setting) >= 17 && ms.setting[16] == 1
 }
 
-// IsEnableYKE 是否支持一扣二
-func (ms *MSetting) IsEnableYKE() bool {
+// IsSettingZME 是否支持自摸加一分
+func (ms *MSetting) IsSettingZME() bool {
 	return len(ms.setting) >= 18 && ms.setting[17] == 1
 }
 
-// IsEnableTS 是否支持通三
-func (ms *MSetting) IsEnableTS() bool {
+// IsSettingTS 是否支持通三
+func (ms *MSetting) IsSettingTS() bool {
 	return len(ms.setting) >= 19 && ms.setting[18] == 1
 }
 
-// IsEnableDoubleDP 是否支持大牌翻倍
-func (ms *MSetting) IsEnableDoubleDP() bool {
+// IsSettingDoubleDP 是否支持大牌翻倍
+func (ms *MSetting) IsSettingDoubleDP() bool {
 	return len(ms.setting) >= 20 && ms.setting[19] == 1
 }

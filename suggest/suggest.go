@@ -1,8 +1,6 @@
 package suggest
 
 import (
-	"sort"
-
 	"github.com/fwhappy/mahjong/card"
 	"github.com/fwhappy/mahjong/step"
 	"github.com/fwhappy/mahjong/ting"
@@ -181,31 +179,28 @@ func (ms *MSelector) suggestByWeightAndRemain(tilesWeight map[int]int) int {
 // 如果有孤张，优先返回孤张
 // 孤一对，不拆做提示
 // 最多返回maxLength个结果，如果maxLength=0，表示返回所有
+// maxLength: 最多返回多少个孤张
 func (ms *MSelector) GetSuggestMap(maxLength int) map[int][]int {
 	suggestMap := make(map[int][]int)
-	// 用户当前手牌
-	// handTiles := ms.ShowHandTiles()
-
 	// 优先判断是否有缺
 	if ms.hasLack() {
 		return suggestMap
 	}
-
+	// 用户手牌
+	handTiles := util.MapToSlice(ms.handTiles)
 	// 如果有孤张，则优先提示孤张
+	// 孤张按权重来选，优先边张
 	if gTiles := ms.getGuTiles(); len(gTiles) > 0 {
-		for _, v := range weight.GetMinWeigthTiles(util.MapToSlice(ms.handTiles), gTiles, maxLength) {
+		for _, v := range weight.GetMinWeigthTiles(handTiles, gTiles, maxLength) {
 			suggestMap[v] = []int{}
 		}
 		return suggestMap
 	}
-
-	// 手牌
-	s := util.MapToSlice(ms.handTiles)
+	// 按一类有效牌剩余数推荐
 	// 获取所有的孤一对
 	gpTiles := ms.getGuPairTiles()
-
-	// 计算当前牌阶
-	currentStep := step.GetCardsStep(s)
+	// 计算手牌当前牌阶
+	currentStep := step.GetCardsStep(handTiles)
 
 	// 循环删除一张手牌后，计算一类有效牌的数量
 	for playTile := range ms.handTiles {
@@ -213,7 +208,7 @@ func (ms *MSelector) GetSuggestMap(maxLength int) map[int][]int {
 		if util.IntInSlice(playTile, gpTiles) {
 			continue
 		}
-		tiles := util.SliceDel(s, playTile)
+		tiles := util.SliceDel(handTiles, playTile)
 		// 如果打出后，牌阶比之前的还要低，肯定不能这么打
 		playedStep := step.GetCardsStep(tiles)
 		if playedStep < currentStep {
@@ -235,7 +230,7 @@ func (ms *MSelector) GetSuggestMap(maxLength int) map[int][]int {
 			if util.IntInSlice(playTile, gpTiles) {
 				continue
 			}
-			tiles := util.SliceDel(s, playTile)
+			tiles := util.SliceDel(handTiles, playTile)
 			// 如果打出后，牌阶比之前的还要低，肯定不能这么打
 			playedStep := step.GetCardsStep(tiles)
 			if playedStep < currentStep {
@@ -255,38 +250,24 @@ func (ms *MSelector) GetSuggestMap(maxLength int) map[int][]int {
 		}
 	}
 
-	// 如果找到了推荐的牌，则需要根据可进张数，保留maxLength个推荐的牌
-	if len(suggestMap) > maxLength {
-		remainTiles := []int{}
-		remainMap := make(map[int][]int)
-		cnts := []int{}
-		for tile, effects := range suggestMap {
-			remainCnt := ms.getRemainTilesCnt(effects)
-			v, ok := remainMap[remainCnt]
-			if ok {
-				remainMap[remainCnt] = append(v, tile)
-			} else {
-				remainMap[remainCnt] = []int{tile}
-				cnts = append(cnts, remainCnt)
-			}
+	// 如果找到了推荐的牌，则找出有效进张数最多的那些
+	remainTiles := []int{}
+	maxCnt := 0
+	for tile, effects := range suggestMap {
+		remainCnt := ms.getRemainTilesCnt(effects)
+		if remainCnt > maxCnt {
+			remainTiles = []int{tile}
+			maxCnt = remainCnt
+		} else if remainCnt == maxCnt {
+			remainTiles = append(remainTiles, tile)
 		}
-		sort.Ints(cnts)
-		for i := len(cnts) - 1; i >= 0; i-- {
-			for _, tile := range remainMap[cnts[i]] {
-				remainTiles = append(remainTiles, tile)
-				if len(remainTiles) >= maxLength {
-					break
-				}
-			}
-			if len(remainTiles) >= maxLength {
-				break
-			}
-		}
-
-		for k := range suggestMap {
-			if !util.IntInSlice(k, remainTiles) {
-				delete(suggestMap, k)
-			}
+	}
+	if len(remainTiles) > maxLength {
+		remainTiles = weight.GetMinWeigthTiles(handTiles, remainTiles, maxLength)
+	}
+	for k := range suggestMap {
+		if !util.IntInSlice(k, remainTiles) {
+			delete(suggestMap, k)
 		}
 	}
 

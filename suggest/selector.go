@@ -22,16 +22,17 @@ type MSelector struct {
 func NewMSelector() *MSelector {
 	selector := &MSelector{}
 	selector.tiles = make(map[int]int, 0)
-	selector.clean()
+	selector.Clean()
 	return selector
 }
 
-// 清空选牌器
-func (ms *MSelector) clean() {
+// Clean 清空选牌器
+func (ms *MSelector) Clean() {
 	ms.handTiles = make(map[int]int, 0)
 	ms.discardTiles = make(map[int]int, 0)
 	ms.showTiles = make(map[int]int, 0)
 	ms.remainTiles = make(map[int]int, 0)
+	ms.lack = 0
 }
 
 // SetAILevel 设置AI级别
@@ -238,6 +239,25 @@ func (ms *MSelector) isGuTile(tile int) bool {
 	return true
 }
 
+// 获取手牌中与某张牌是孤对
+func (ms *MSelector) isGuPair(tile int) bool {
+	// 单张超过1张，不算故障
+	cnt, _ := ms.handTiles[tile]
+	if cnt != 2 {
+		return false
+	}
+	// 拥有有关联的牌，则不算孤张
+	for _, rTile := range card.GetRelationTiles(tile) {
+		if rTile == tile {
+			continue
+		}
+		if _, exists := ms.handTiles[rTile]; exists {
+			return false
+		}
+	}
+	return true
+}
+
 // 获取所有的孤张
 func (ms *MSelector) getGuTiles() []int {
 	gTiles := make([]int, 0)
@@ -252,5 +272,10 @@ func (ms *MSelector) getGuTiles() []int {
 // 获取所有的孤一对
 func (ms *MSelector) getGuPairTiles() []int {
 	gpTiles := []int{}
+	for tile := range ms.handTiles {
+		if ms.isGuPair(tile) {
+			gpTiles = append(gpTiles, tile)
+		}
+	}
 	return gpTiles
 }

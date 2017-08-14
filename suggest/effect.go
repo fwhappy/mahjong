@@ -27,7 +27,7 @@ func calcEffects(tiles []int, currentStep int) []int {
 	// 可能是一类有效的牌
 	maybeFirstEffects := ting.GetMaybeTing(tiles, nil)
 	sort.Ints(maybeFirstEffects)
-	for maybeTile := range maybeFirstEffects {
+	for _, maybeTile := range maybeFirstEffects {
 		fillingStep := step.GetCardsStep(append(util.SliceCopy(tiles), maybeTile))
 		if fillingStep > currentStep {
 			effects = append(effects, maybeTile)
